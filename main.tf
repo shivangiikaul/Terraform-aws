@@ -47,7 +47,7 @@ resource "aws_route_table_association" "a" {
   route_table_id = aws_route_table.test-route.id
 }
 resource "aws_security_group" "test-securitygroup" {
-  name        = "allow_tls"
+  name        = "allow_tls1"
   description = "Allow TLS inbound traffic"
   vpc_id      = aws_vpc.test-vpc.id
 
@@ -61,7 +61,7 @@ resource "aws_security_group" "test-securitygroup" {
 }
 
 resource "aws_security_group" "test-securitygroup-elb" {
-  name        = "allow_tls"
+  name        = "allow_tls2"
   description = "Allow TLS inbound traffic"
   vpc_id      = aws_vpc.test-vpc.id
 
@@ -132,7 +132,7 @@ resource "aws_autoscaling_group" "test-asggroup" {
   force_delete              = true
   #placement_group           = aws_placement_group.test.id
   launch_configuration      = aws_launch_configuration.test-launchconfig.name
-  vpc_zone_identifier       = [aws_subnet.test-subnet.id]
+  #vpc_zone_identifier       = aws_subnet.test-subnet.id
   
 }
 
@@ -141,7 +141,7 @@ resource "aws_lb" "test-elb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.test-securitygroup-elb.id]
-  subnets            = aws_subnet.test-subnet.ids
+  #subnets            = aws_subnet.test-subnet.id
 }
 
 resource "aws_lb_listener" "test-elb-listener" {
@@ -157,5 +157,5 @@ resource "aws_lb_listener" "test-elb-listener" {
 
 resource "aws_autoscaling_attachment" "test-autosacling-attachment" {
   autoscaling_group_name = aws_autoscaling_group.test-asggroup.id
-  alb_target_group_arn   = aws_lb_target_group.test-tg.arn
+  lb_target_group_arn   = aws_lb_target_group.test-targetgroups.arn
 }

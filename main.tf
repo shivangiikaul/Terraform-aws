@@ -135,7 +135,8 @@ resource "aws_launch_configuration" "test-launchconfig" {
   instance_type   = "t2.micro"
   user_data       = file("/tmp/user-data.sh")
   security_groups = [aws_security_group.test-securitygroup.id]
-
+  key_name = "aws-key"
+  associate_public_ip_address = "true"
   lifecycle {
     create_before_destroy = true
   }
@@ -152,8 +153,8 @@ resource "aws_autoscaling_group" "test-asggroup" {
   #placement_group           = aws_placement_group.test.id
   launch_configuration      = aws_launch_configuration.test-launchconfig.name
   vpc_zone_identifier       = [ aws_subnet.test-subnet.id, aws_subnet.test-subnet2.id ]
-  associate_public_ip_address = "true"
-  key_name = "aws-key"
+#  associate_public_ip_address = "true"
+
   
 }
 

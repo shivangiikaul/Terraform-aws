@@ -19,11 +19,24 @@ resource "aws_vpc" "test-vpc" {
 resource "aws_subnet" "test-subnet" {
   vpc_id     = aws_vpc.test-vpc.id
   cidr_block = "10.0.0.0/24"
+  availability_zone = "us-east-1a"
 
   tags = {
     cretaed-by = "Shivangi"
   }
 }
+
+resource "aws_subnet" "test-subnet2" {
+  vpc_id     = aws_vpc.test-vpc.id
+  cidr_block = "10.0.1.0/24"
+  availability_zone = "us-east-1b"
+
+  tags = {
+    cretaed-by = "Shivangi"
+  }
+}
+
+
 resource "aws_internet_gateway" "test-gateway" {
   vpc_id = aws_vpc.test-vpc.id
 
@@ -42,8 +55,14 @@ resource "aws_route_table" "test-route" {
     gateway_id = aws_internet_gateway.test-gateway.id
   }
 }
+
 resource "aws_route_table_association" "a" {
   subnet_id      = aws_subnet.test-subnet.id
+  route_table_id = aws_route_table.test-route.id
+}
+
+resource "aws_route_table_association" "b" {
+  subnet_id      = aws_subnet.test-subnet2.id
   route_table_id = aws_route_table.test-route.id
 }
 resource "aws_security_group" "test-securitygroup" {
@@ -82,17 +101,17 @@ resource "aws_security_group" "test-securitygroup-elb" {
 #  cidr_blocks       = [aws_vpc.test-vpc.cidr_block]
 #  security_group_id = "aws_instance.vpc_security_group_ids"
 #}
-resource "aws_instance" "test-server" {
-  ami       = "ami-05fa00d4c63e32376"
-  instance_type = "t2.micro"
-  subnet_id = aws_subnet.test-subnet.id
-  associate_public_ip_address = "true"
-  key_name = "aws-key"
+#resource "aws_instance" "test-server" {
+#  ami       = "ami-05fa00d4c63e32376"
+#  instance_type = "t2.micro"
+#  #subnet_id = [ aws_subnet.test-subnet.id, aws_subnet.test-subnet2.id ]
+#  associate_public_ip_address = "true"
+#  key_name = "aws-key"
 #  security_group_ids = "aws_instance.vpc_security_group_ids"
-  tags = {
-    type = "web-server"
-  }
-}
+ # tags = {
+  #  type = "web-server"
+  #}
+#}
 resource "aws_network_interface_sg_attachment" "sg_attachment" {
   security_group_id    = "${aws_security_group.test-securitygroup.id}"
   network_interface_id = "${aws_instance.test-server.primary_network_interface_id}"
@@ -132,7 +151,9 @@ resource "aws_autoscaling_group" "test-asggroup" {
   force_delete              = true
   #placement_group           = aws_placement_group.test.id
   launch_configuration      = aws_launch_configuration.test-launchconfig.name
-  #vpc_zone_identifier       = aws_subnet.test-subnet.id
+  vpc_zone_identifier       = [ aws_subnet.test-subnet.id, aws_subnet.test-subnet2.id ]
+  associate_public_ip_address = "true"
+  key_name = "aws-key"
   
 }
 
@@ -141,7 +162,7 @@ resource "aws_lb" "test-elb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.test-securitygroup-elb.id]
-  #subnets            = aws_subnet.test-subnet.id
+  subnets            = [ aws_subnet.test-subnet.id, aws_subnet.test-subnet2.id ]
 }
 
 resource "aws_lb_listener" "test-elb-listener" {

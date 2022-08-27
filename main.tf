@@ -186,7 +186,9 @@ resource "aws_autoscaling_group" "test-asggroup" {
   vpc_zone_identifier       = [ aws_subnet.test-subnet.id, aws_subnet.test-subnet2.id ]
 #  associate_public_ip_address = "true"
 
-  
+    target_group_arns = [
+    aws_lb_target_group.test-targetgroups.arn
+  ]  
 }
 
 resource "aws_lb" "test-elb" {

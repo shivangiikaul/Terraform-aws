@@ -124,9 +124,12 @@ resource "aws_security_group" "test-securitygroup-elb" {
   }
  egress {
     from_port        = 0
-    to_port          = -1
-    protocol         = "tcp"
-    security_group_id = aws_security_group.test-securitygroup.id
+    to_port          = 0
+    protocol         = "-1"
+   # security_group_id = aws_security_group.test-securitygroup.id
+    cidr_blocks     = ["0.0.0.0/0"]
+    #destination_security_group_id = aws_security_group.test-securitygroup.id
+  }
 }
 
 #resource "aws_security_group_rule" "test-rule" {

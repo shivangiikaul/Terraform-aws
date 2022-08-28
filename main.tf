@@ -176,6 +176,7 @@ resource "aws_launch_configuration" "test-launchconfig" {
   security_groups = [aws_security_group.test-securitygroup.id]
   key_name = "aws-key"
   associate_public_ip_address = "true"
+  iam_instance_profile = aws_iam_instance_profile.test_profile.name
   lifecycle {
     create_before_destroy = true
   }
@@ -221,4 +222,31 @@ resource "aws_lb_listener" "test-elb-listener" {
 resource "aws_autoscaling_attachment" "test-autosacling-attachment" {
   autoscaling_group_name = aws_autoscaling_group.test-asggroup.id
   lb_target_group_arn   = aws_lb_target_group.test-targetgroups.arn
+}
+
+#resource "aws_s3_bucket" "test-bucket" {
+ # bucket = "manual-bucket1234"
+#}
+
+resource "aws_iam_policy" "test-s3-policy" {
+  name        = "ec2-s3" 
+  description = "My test policy"
+  policy = file("/tmp/s3-policy")
+
+}
+
+resource "aws_iam_role" "ec2_s3_access_role" {
+  name               = "s3-role"
+  assume_role_policy = file("/tmp/trust-policy-ec2")
+}
+
+resource "aws_iam_instance_profile" "test_profile" {                             
+name  = "test_profile"                         
+role = aws_iam_role.ec2_s3_access_role.name
+}
+
+resource "aws_iam_policy_attachment" "test-attach" {
+  name       = "test-attachment"
+  roles      = [ aws_iam_role.ec2_s3_access_role.name ]
+  policy_arn = aws_iam_policy.test-s3-policy.arn
 }

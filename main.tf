@@ -250,3 +250,12 @@ resource "aws_iam_policy_attachment" "test-attach" {
   roles      = [ aws_iam_role.ec2_s3_access_role.name ]
   policy_arn = aws_iam_policy.test-s3-policy.arn
 }
+
+resource "aws_s3_bucket" "manual-bucket1234" {
+  bucket = "manual-bucket1234"
+
+  tags = {
+    Name        = "My bucket"
+    Created-by = "shivangi"
+  }
+}

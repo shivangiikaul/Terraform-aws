@@ -252,10 +252,23 @@ resource "aws_iam_policy_attachment" "test-attach" {
 }
 
 resource "aws_s3_bucket" "manual-bucket1234" {
-  bucket = "manual-bucket1234"
+  bucket = "manual-bucket123412"
 
   tags = {
     Name        = "My bucket"
     Created-by = "shivangi"
   }
 }
+####  IAM role for code deploy ##################
+resource "aws_iam_role" "code-deploy-trust" {
+  name = "code-deploy-trust"
+
+  assume_role_policy = file("/tmp/trust-policy-codedeploy")
+}
+
+resource "aws_iam_role_policy_attachment" "AWSCodeDeployRole" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+  role       = aws_iam_role.code-deploy-trust.name
+}
+
+##################################################

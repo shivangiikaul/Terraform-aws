@@ -3,4 +3,4 @@ Added Environment variables :
 export TF_LOG=TRACE
 export TF_LOG_PATH=/tmp/terraform-log
 
-
+user data available at : http://169.254.169.254/latest/user-data/

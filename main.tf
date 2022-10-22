@@ -282,4 +282,8 @@ resource "aws_db_instance" "test-database" {
   parameter_group_name = "default.mysql5.7"
   skip_final_snapshot  = true
 }
+
+resource "aws_db_subnet_group" "db-subnet" {
+name = "DB subnet group"
+subnet_ids = ["${aws_subnet.test-subnet.id}", "${aws_subnet.test-subnet2.id}"]}
 ##################################################

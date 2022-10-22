@@ -281,9 +281,13 @@ resource "aws_db_instance" "test-database" {
   password             = var.password
   parameter_group_name = "default.mysql5.7"
   skip_final_snapshot  = true
+  db_subnet_group_name = "${aws_db_subnet_group.db-subnet.name}"
 }
 
 resource "aws_db_subnet_group" "db-subnet" {
 name = "DB subnet group"
 subnet_ids = ["${aws_subnet.test-subnet.id}", "${aws_subnet.test-subnet2.id}"]}
+
+
+
 ##################################################

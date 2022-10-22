@@ -172,7 +172,7 @@ resource "aws_launch_configuration" "test-launchconfig" {
   name_prefix     = "learn-terraform-aws-asg-"
   image_id        = "ami-05fa00d4c63e32376"
   instance_type   = "t2.micro"
-  user_data       = file("/tmp/user-data.sh")
+  user_data       = file("/terraform/otherfiles/user-data.sh")
   security_groups = [aws_security_group.test-securitygroup.id]
   key_name = "aws-key"
   associate_public_ip_address = "true"
@@ -231,13 +231,13 @@ resource "aws_autoscaling_attachment" "test-autosacling-attachment" {
 resource "aws_iam_policy" "test-s3-policy" {
   name        = "ec2-s3" 
   description = "My test policy"
-  policy = file("/tmp/s3-policy")
+  policy = file("/terraform/otherfiles/s3-policy")
 
 }
 
 resource "aws_iam_role" "ec2_s3_access_role" {
   name               = "s3-role"
-  assume_role_policy = file("/tmp/trust-policy-ec2")
+  assume_role_policy = file("/terraform/otherfiles/trust-policy-ec2")
 }
 
 resource "aws_iam_instance_profile" "test_profile" {                             
@@ -263,7 +263,7 @@ resource "aws_s3_bucket" "manual-bucket1234" {
 resource "aws_iam_role" "code-deploy-trust" {
   name = "code-deploy-trust"
 
-  assume_role_policy = file("/tmp/trust-policy-codedeploy")
+  assume_role_policy = file("/terraform/otherfiles/trust-policy-codedeploy")
 }
 
 resource "aws_iam_role_policy_attachment" "AWSCodeDeployRole" {
@@ -277,16 +277,17 @@ resource "aws_db_instance" "test-database" {
   engine               = "mysql"
   engine_version       = "5.7"
   instance_class       = "db.t3.micro"
-  username             = var.username
-  password             = var.password
+  username             = var.db_username
+  password             = var.db_password
   parameter_group_name = "default.mysql5.7"
   skip_final_snapshot  = true
   db_subnet_group_name = "${aws_db_subnet_group.db-subnet.name}"
 }
 
 resource "aws_db_subnet_group" "db-subnet" {
-name = "DB subnet group"
-subnet_ids = ["${aws_subnet.test-subnet.id}", "${aws_subnet.test-subnet2.id}"]}
+ name = "db_subnet_group"
+ subnet_ids = ["${aws_subnet.test-subnet.id}", "${aws_subnet.test-subnet2.id}"]
+}
 
 
 

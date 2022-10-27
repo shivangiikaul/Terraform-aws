@@ -94,6 +94,16 @@ resource "aws_security_group" "test-securitygroup" {
   }
 
   ingress {
+    description      = "3306 from mysql"
+    from_port        = 3306
+    to_port          = 3306
+    protocol         = "tcp"
+   #cidr_blocks     = ["0.0.0.0/0"]
+    security_groups = [aws_security_group.test-db-securitygroup.id]
+  }
+
+
+  ingress {
     description      = "icmp from anywhere"
     from_port        = -1
     to_port          = -1
@@ -109,6 +119,7 @@ resource "aws_security_group" "test-securitygroup" {
   }
 
 }
+
 
 resource "aws_security_group" "test-securitygroup-elb" {
   name        = "allow_tls2"
@@ -271,6 +282,24 @@ resource "aws_iam_role_policy_attachment" "AWSCodeDeployRole" {
   role       = aws_iam_role.code-deploy-trust.name
 }
 
+resource "aws_security_group" "test-db-securitygroup" {
+  name        = "DB-SG"
+  description = "Allow TLS inbound traffic"
+  vpc_id      = aws_vpc.test-vpc.id
+}
+
+resource "aws_security_group_rule" "allow_3306" {
+
+    type = "ingress"
+    description      = "TLS from VPC"
+    from_port        = 3306
+    to_port          = 3306
+    protocol         = "tcp"
+#    cidr_blocks     = ["0.0.0.0/0"]
+    security_group_id    = aws_security_group.test-db-securitygroup.id
+    source_security_group_id = aws_security_group.test-securitygroup.id
+}
+
 resource "aws_db_instance" "test-database" {
   allocated_storage    = 10
   db_name              = var.db_name
@@ -282,6 +311,7 @@ resource "aws_db_instance" "test-database" {
   parameter_group_name = "default.mysql5.7"
   skip_final_snapshot  = true
   db_subnet_group_name = "${aws_db_subnet_group.db-subnet.name}"
+  vpc_security_group_ids = ["${aws_security_group.test-db-securitygroup.id}"]
 }
 
 resource "aws_db_subnet_group" "db-subnet" {

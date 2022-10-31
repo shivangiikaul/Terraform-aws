@@ -187,6 +187,10 @@ resource "aws_launch_configuration" "test-launchconfig" {
   security_groups = [aws_security_group.test-securitygroup.id]
   key_name = "aws-key"
   associate_public_ip_address = "true"
+ #tags  = {
+ # Key = "name"
+ # Value = "app_server"
+ #}	
   iam_instance_profile = aws_iam_instance_profile.test_profile.name
   lifecycle {
     create_before_destroy = true
@@ -203,10 +207,15 @@ resource "aws_autoscaling_group" "test-asggroup" {
   force_delete              = true
   #placement_group           = aws_placement_group.test.id
   launch_configuration      = aws_launch_configuration.test-launchconfig.name
+  tag {
+     key = "name"
+     value = "app_server"
+     propagate_at_launch = true
+  }
   vpc_zone_identifier       = [ aws_subnet.test-subnet.id, aws_subnet.test-subnet2.id ]
 #  associate_public_ip_address = "true"
 
-    target_group_arns = [
+  target_group_arns = [
     aws_lb_target_group.test-targetgroups.arn
   ]  
 }
@@ -318,6 +327,49 @@ resource "aws_db_subnet_group" "db-subnet" {
  name = "db_subnet_group"
  subnet_ids = ["${aws_subnet.test-subnet.id}", "${aws_subnet.test-subnet2.id}"]
 }
+
+#resource "aws_iam_role" "code-deploy-role" {
+ # name = "test-code-deploy-role"
+
+#  assume_role_policy = file("/terraform/otherfiles/code-deploy-role")
+#}
+
+#resource "aws_iam_role_policy_attachment" "AWSCodeDeployRole" {
+ # policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+ # role       = aws_iam_role.code-deploy-role.name
+#}
+
+resource "aws_codedeploy_app" "test-codedeploy-app" {
+  name = "test-codedeploy-app"
+  compute_platform = "Server"
+}
+
+resource "aws_codedeploy_deployment_group" "test-codedeploy-asg" {
+  app_name              = aws_codedeploy_app.test-codedeploy-app.name
+  deployment_group_name = "code-deploy-group"
+  service_role_arn      = aws_iam_role.code-deploy-trust.arn
+  deployment_style {
+    deployment_option = "WITH_TRAFFIC_CONTROL"
+    deployment_type   = "IN_PLACE"
+  }
+
+  ec2_tag_set {
+    ec2_tag_filter {
+      key   = "name"
+      type  = "KEY_AND_VALUE"
+      value = "app_server"
+    }
+
+  }
+  load_balancer_info {
+    elb_info {
+      name = aws_lb.test-elb.name
+    }
+  }
+ 
+}
+
+
 
 
 

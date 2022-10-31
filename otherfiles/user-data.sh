@@ -11,6 +11,7 @@ wget https://aws-codedeploy-us-east-1.s3.us-east-1.amazonaws.com/latest/install
 chmod +x ./install
 ./install auto
 sudo service codedeploy-agent start
-sudo amazon-linux-extras install nginx1 -y
-sudo service nginx start
-
+#udo amazon-linux-extras install nginx1 -y
+sudo yum install httpd -y
+sudo service httpd start
+sudo mv /usr/share/httpd/noindex/index.html /var/www/html/

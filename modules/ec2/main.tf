@@ -59,7 +59,7 @@ resource "aws_autoscaling_group" "test-asggroup" {
 
 resource "aws_autoscaling_attachment" "test-autosacling-attachment" {
   autoscaling_group_name = aws_autoscaling_group.test-asggroup.id
-  lb_target_group_arn   = aws_lb_target_group.test-targetgroups.arn
+  lb_target_group_arn   = module.LB.test-targetgroups
 }
 
 resource "aws_key_pair" "test-keypair" {

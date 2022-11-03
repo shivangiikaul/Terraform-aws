@@ -7,3 +7,6 @@ output "test-sg-id" {
   }
 
 
+output "test-sg-elb-id" {
+  value = aws_security_group.test-securitygroup-elb.id
+  }

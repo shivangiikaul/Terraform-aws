@@ -18,7 +18,7 @@ resource "aws_db_instance" "test-database" {
   parameter_group_name = "default.mysql5.7"
   skip_final_snapshot  = true
   db_subnet_group_name = "${aws_db_subnet_group.db-subnet.name}"
-  vpc_security_group_ids = ["${module.SECURITY-GROUPS.test-db-sg-id}"]
+  vpc_security_group_ids = [module.SECURITY-GROUPS.test-db-sg-id]
 #  depends_on = [module.networking]
 }
 

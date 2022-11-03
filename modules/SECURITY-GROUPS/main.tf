@@ -1,7 +1,3 @@
-module "networking" {
- source = "../networking"
- }
-
 
 resource "aws_security_group" "test-db-securitygroup" {
   name        = "DB-SG"

@@ -2,6 +2,10 @@ module "networking" {
  source = "../networking"
  }
 
+module "SECURITY-GROUPS" {
+ source = "../SECURITY-GROUPS"
+ }
+
 
 resource "aws_lb_target_group" "test-targetgroups" {
   name     = "test-tg"
@@ -14,8 +18,8 @@ resource "aws_lb" "test-elb" {
   name               = "test-elb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.test-securitygroup-elb.id]
-  subnets            = [ aws_subnet.test-subnet.id, aws_subnet.test-subnet2.id ]
+  security_groups    = [module.SECURITY-GROUPS.test-sg-elb-id]
+  subnets            = [ module.networking.test-subnet, module.networking.test-subnet2 ]
 }
 
 resource "aws_lb_listener" "test-elb-listener" {

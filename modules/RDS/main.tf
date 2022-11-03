@@ -1,3 +1,12 @@
+
+module "networking" {
+ source = "../networking"
+ }
+
+module "SECURITY-GROUPS" {
+ source = "../SECURITY-GROUPS"
+ }
+
 resource "aws_db_instance" "test-database" {
   allocated_storage    = 10
   db_name              = var.db_name
@@ -9,11 +18,11 @@ resource "aws_db_instance" "test-database" {
   parameter_group_name = "default.mysql5.7"
   skip_final_snapshot  = true
   db_subnet_group_name = "${aws_db_subnet_group.db-subnet.name}"
-  vpc_security_group_ids = ["${aws_security_group.test-db-securitygroup.id}"]
-  depends_on = [module.networking]
+  vpc_security_group_ids = ["${module.networking.test-db-sg-id}"]
+#  depends_on = [module.networking]
 }
 
 resource "aws_db_subnet_group" "db-subnet" {
  name = "db_subnet_group"
- subnet_ids = ["${aws_subnet.test-subnet.id}", "${aws_subnet.test-subnet2.id}"]
+ subnet_ids = ["${module.networking.test-subnet}", "${module.networking.test-subnet2}"]
 }

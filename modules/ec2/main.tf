@@ -1,16 +1,29 @@
+module "networking" {
+ source = "../networking"
+ }
+
+module "IAM" {
+ source = "../IAM"
+ }
+
+module "SECURITY-GROUPS" {
+ source = "../SECURITY-GROUPS"
+ }
+
+
 resource "aws_launch_configuration" "test-launchconfig" {
   name_prefix     = "learn-terraform-aws-asg-"
   image_id        = var.ami_id
   instance_type   = "t2.micro"
   user_data       = file("/terraform/otherfiles/user-data.sh")
-  security_groups = [aws_security_group.test-securitygroup.id]
+  security_groups = [module.SECURITY-GROUPS.test-sg-id]
   key_name = "aws-key"
   associate_public_ip_address = "true"
  #tags  = {
  # Key = "name"
  # Value = "app_server"
  #}	
-  iam_instance_profile = aws_iam_instance_profile.test_profile.name
+  iam_instance_profile = module.networking.test-profile-name
   lifecycle {
     create_before_destroy = true
   }

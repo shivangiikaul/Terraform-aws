@@ -1,3 +1,8 @@
+module "networking" {
+ source = "../networking"
+ }
+
+
 resource "aws_iam_policy" "test-s3-policy" {
   name        = "ec2-s3" 
   description = "My test policy"

@@ -1,3 +1,8 @@
+module "networking" {
+ source "../networking"
+}
+
+
 resource "aws_lb_target_group" "test-targetgroups" {
   name     = "test-tg"
   port     = 80

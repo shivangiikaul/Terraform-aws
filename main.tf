@@ -9,7 +9,8 @@ module "ec2" {
 
 module "RDS" {
   source    = "./modules/RDS"
-  depends_on = [module.networking]
+#  depends_on = [module.networking]
+#  db-subnet =  module.networking.test-subnet
 }
 
 module "IAM" {

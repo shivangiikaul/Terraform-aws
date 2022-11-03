@@ -10,6 +10,11 @@ module "SECURITY-GROUPS" {
  source = "../SECURITY-GROUPS"
  }
 
+module "LB" {
+ source = "../LB"
+ }
+
+
 
 resource "aws_launch_configuration" "test-launchconfig" {
   name_prefix     = "learn-terraform-aws-asg-"
@@ -23,7 +28,7 @@ resource "aws_launch_configuration" "test-launchconfig" {
  # Key = "name"
  # Value = "app_server"
  #}	
-  iam_instance_profile = module.networking.test-profile-name
+  iam_instance_profile = module.IAM.test-profile-name
   lifecycle {
     create_before_destroy = true
   }
@@ -44,11 +49,11 @@ resource "aws_autoscaling_group" "test-asggroup" {
      value = "app_server"
      propagate_at_launch = true
   }
-  vpc_zone_identifier       = [ aws_subnet.test-subnet.id, aws_subnet.test-subnet2.id ]
+  vpc_zone_identifier       = [ module.networking.test-subnet, module.networking.test-subnet2 ]
 #  associate_public_ip_address = "true"
 
   target_group_arns = [
-    aws_lb_target_group.test-targetgroups.arn
+    module.LB.test-targetgroups
   ]  
 }
 

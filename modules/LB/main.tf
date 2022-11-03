@@ -1,13 +1,13 @@
 module "networking" {
- source "../networking"
-}
+ source = "../networking"
+ }
 
 
 resource "aws_lb_target_group" "test-targetgroups" {
   name     = "test-tg"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = aws_vpc.test-vpc.id
+  vpc_id   = module.networking.vpc-id
 }
 
 resource "aws_lb" "test-elb" {

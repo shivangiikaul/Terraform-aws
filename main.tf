@@ -33,3 +33,14 @@ module "LB" {
  test-sg-elb-id = [module.SECURITY-GROUPS.test-sg-elb-id]
  test-subnet =  ["${module.networking.test-subnet}", "${module.networking.test-subnet2}"]
  }
+
+module "CODE-DEPLOY" {
+  source    = "./modules/CODE-DEPLOY"
+  code-deploy-trust-arn = module.IAM.code-deploy-trust-arn
+  test-elb-name = module.LB.test-elb-name
+}
+
+module "S3-BUCKET" { 
+  source    = "./modules/S3-BUCKET"
+}
+

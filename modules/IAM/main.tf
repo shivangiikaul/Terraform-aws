@@ -22,4 +22,14 @@ resource "aws_iam_policy_attachment" "test-attach" {
   policy_arn = aws_iam_policy.test-s3-policy.arn
 }
 
+resource "aws_iam_role" "code-deploy-trust" {
+  name = "code-deploy-trust"
+
+  assume_role_policy = file("/terraform/otherfiles/trust-policy-codedeploy")
+}
+
+resource "aws_iam_role_policy_attachment" "AWSCodeDeployRole" {
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSCodeDeployRole"
+  role       = aws_iam_role.code-deploy-trust.name
+}
 

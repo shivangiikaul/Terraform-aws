@@ -3,19 +3,27 @@ variable "db_name" {
   type        = string
   default     = "testdb"
   sensitive   = true
-}
+  }
 
 variable "db_username" {
   description = "Database username"
   type        = string
   default     = "test"
-   sensitive   = true
-}
+  sensitive   = true
+  }
 
 variable "db_password" {
   description = "Database password"
   type        = string
   default     = "test1234"
-   sensitive   = true
-}
+  sensitive   = true
+  }
+
+variable "db-sg-id" {
+  type = list
+  }
+
+variable "test-subnet" {
+ type = list
+ }
 

@@ -5,4 +5,22 @@ variable "ami_id" {
 
 }
 
+variable "test-sg-id" {
+ type = list
+ }
+
+variable "test-profile-name" {
+ type = string
+ }
+
+variable "test-subnet" {
+ type = list
+ }
+
+
+variable "test-targetgroups" {
+ type = string
+ }
+
+
 

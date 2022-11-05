@@ -2,7 +2,7 @@
 resource "aws_security_group" "test-db-securitygroup" {
   name        = "DB-SG"
   description = "Allow TLS inbound traffic"
-  vpc_id      = module.networking.vpc-id
+  vpc_id      = var.vpc-id
 }
 
 
@@ -21,7 +21,7 @@ resource "aws_security_group_rule" "allow_3306" {
 resource "aws_security_group" "test-securitygroup-elb" {
   name        = "allow_tls2"
   description = "Allow TLS inbound traffic"
-  vpc_id      = module.networking.vpc-id
+  vpc_id      = var.vpc-id
 
   ingress {
     description      = "TLS from VPC"
@@ -44,7 +44,7 @@ resource "aws_security_group" "test-securitygroup-elb" {
 resource "aws_security_group" "test-securitygroup" {
   name        = "allow_tls1"
   description = "Allow TLS inbound traffic"
-  vpc_id      = module.networking.vpc-id
+  vpc_id      = var.vpc-id
 
   ingress {
     description      = "TLS from VPC"

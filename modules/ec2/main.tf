@@ -1,34 +1,16 @@
-module "networking" {
- source = "../networking"
- }
-
-module "IAM" {
- source = "../IAM"
- }
-
-module "SECURITY-GROUPS" {
- source = "../SECURITY-GROUPS"
- }
-
-module "LB" {
- source = "../LB"
- }
-
-
-
 resource "aws_launch_configuration" "test-launchconfig" {
   name_prefix     = "learn-terraform-aws-asg-"
   image_id        = var.ami_id
   instance_type   = "t2.micro"
   user_data       = file("/terraform/otherfiles/user-data.sh")
-  security_groups = [module.SECURITY-GROUPS.test-sg-id]
+  security_groups = var.test-sg-id
   key_name = "aws-key"
   associate_public_ip_address = "true"
  #tags  = {
  # Key = "name"
  # Value = "app_server"
  #}	
-  iam_instance_profile = module.IAM.test-profile-name
+  iam_instance_profile = var.test-profile-name
   lifecycle {
     create_before_destroy = true
   }
@@ -49,17 +31,15 @@ resource "aws_autoscaling_group" "test-asggroup" {
      value = "app_server"
      propagate_at_launch = true
   }
-  vpc_zone_identifier       = [ module.networking.test-subnet, module.networking.test-subnet2 ]
+  vpc_zone_identifier       = var.test-subnet
 #  associate_public_ip_address = "true"
 
-  target_group_arns = [
-    module.LB.test-targetgroups
-  ]  
+  target_group_arns = [var.test-targetgroups]  
 }
 
 resource "aws_autoscaling_attachment" "test-autosacling-attachment" {
   autoscaling_group_name = aws_autoscaling_group.test-asggroup.id
-  lb_target_group_arn   = module.LB.test-targetgroups
+  lb_target_group_arn   = var.test-targetgroups
 }
 
 resource "aws_key_pair" "test-keypair" {

@@ -1,25 +1,19 @@
-module "networking" {
- source = "../networking"
- }
 
-module "SECURITY-GROUPS" {
- source = "../SECURITY-GROUPS"
- }
 
 
 resource "aws_lb_target_group" "test-targetgroups" {
   name     = "test-tg"
   port     = 80
   protocol = "HTTP"
-  vpc_id   = module.networking.vpc-id
+  vpc_id   = var.vpc-id
 }
 
 resource "aws_lb" "test-elb" {
   name               = "test-elb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [module.SECURITY-GROUPS.test-sg-elb-id]
-  subnets            = [ module.networking.test-subnet, module.networking.test-subnet2 ]
+  security_groups    = var.test-sg-elb-id
+  subnets            = var.test-subnet
 }
 
 resource "aws_lb_listener" "test-elb-listener" {
